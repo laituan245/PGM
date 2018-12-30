@@ -32,7 +32,7 @@ function phenotypeFactor = phenotypeGivenGenotypeMendelianFactor(isDominant, gen
 %   phenotypeFactor: Factor denoting the probability of having each 
 %   phenotype for each genotype
 
-phenotypeFactor = struct('var', [], 'card', [], 'val', []);
+phenotypeFactor = struct('var', [phenotypeVar, genotypeVar], 'card', [2, 3], 'val', []);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %INSERT YOUR CODE HERE
@@ -43,5 +43,20 @@ phenotypeFactor = struct('var', [], 'card', [], 'val', []);
 
 phenotypeFactor.val = zeros(1, prod(phenotypeFactor.card));
 % Replace the zeros in phentoypeFactor.val with the correct values.
-
+for i=1:prod(phenotypeFactor.card),
+  assignment = IndexToAssignment(i, phenotypeFactor.card);
+  phenotypeFactor.val(i) = 0;
+  if isDominant == 1 && assignment(1) == 1 && assignment(2) < 3,
+    phenotypeFactor.val(i) = 1;
+  endif
+  if isDominant == 0 && assignment(1) == 1 && assignment(2) == 3,
+    phenotypeFactor.val(i) = 1;
+  endif
+  if isDominant == 1 && assignment(1) == 2 && assignment(2) == 3,
+    phenotypeFactor.val(i) = 1;
+  endif
+  if isDominant == 0 && assignment(1) == 2 && assignment(2) < 3,
+    phenotypeFactor.val(i) = 1;
+  endif
+endfor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
