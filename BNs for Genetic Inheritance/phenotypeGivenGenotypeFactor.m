@@ -26,7 +26,7 @@ function phenotypeFactor = phenotypeGivenGenotypeFactor(alphaList, genotypeVar, 
 %   each phenotype for each genotype combination (note that this is the 
 %   FULL CPD with no evidence observed)
 
-phenotypeFactor = struct('var', [], 'card', [], 'val', []);
+phenotypeFactor = struct('var', [phenotypeVar, genotypeVar], 'card', [2, length(alphaList)], 'val', []);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %INSERT YOUR CODE HERE
@@ -39,5 +39,14 @@ phenotypeFactor = struct('var', [], 'card', [], 'val', []);
 
 phenotypeFactor.val = zeros(1, prod(phenotypeFactor.card));
 % Replace the zeros in phentoypeFactor.val with the correct values.
-
+for i=1:prod(phenotypeFactor.card),
+  assignment = IndexToAssignment(i, phenotypeFactor.card);
+  if assignment(1) == 1
+    phenotypeFactor.val(i) = alphaList(assignment(2));
+  endif
+  
+  if assignment(1) == 2
+    phenotypeFactor.val(i) = 1 - alphaList(assignment(2));
+  endif
+endfor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
