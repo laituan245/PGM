@@ -27,7 +27,15 @@ end
 % Remember to renormalize the entries of M!
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-M = struct('var', [], 'card', [], 'val', []); % Returns empty factor. Change this.
+M_E = ObserveEvidence(F, E);
+M = M_E(1);
+for i = 2:numel(M_E),
+  M = FactorProduct(M, M_E(i));
+endfor
 
+remain_vars = setdiff(M.var,V);
+
+M = FactorMarginalization(M,remain_vars);
+M.val /= sum(M.val);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end
