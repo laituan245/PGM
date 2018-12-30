@@ -55,8 +55,9 @@ numPeople = length(pedigree.names);
 % factor for each person's genotype and a separate factor for each person's 
 % phenotype.  Note that the order of the factors in the list does not
 % matter.
-factorList(2*numPeople) = struct('var', [], 'card', [], 'val', []);
-
+for i=1:2*numPeople,
+  factorList(i) = struct('var', [], 'card', [], 'val', []);
+endfor
 numAlleles = length(alleleFreqs); % Number of alleles
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -64,6 +65,17 @@ numAlleles = length(alleleFreqs); % Number of alleles
 % Variable numbers:
 % 1 - numPeople: genotype variables
 % numPeople+1 - 2*numPeople: phenotype variables
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+for i=1:numPeople,
+  parent1 = pedigree.parents(i,1);
+  parent2 = pedigree.parents(i,2);
+  if parent1 == 0 && parent2 == 0
+    factorList(2*i-1) = genotypeGivenAlleleFreqsFactor(alleleFreqs,i);
+    factorList(2*i) = phenotypeGivenGenotypeFactor(alphaList, i, numPeople+i);
+  else
+    factorList(2*i-1) = genotypeGivenParentsGenotypesFactor(numAlleles, i, parent1, parent2);
+    factorList(2*i) = phenotypeGivenGenotypeFactor(alphaList, i, numPeople+i);
+  endif
+endfor
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
