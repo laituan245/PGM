@@ -25,7 +25,7 @@ function genotypeFactor = genotypeGivenParentsGenotypesFactor(numAlleles, genoty
 % The number of genotypes is (number of alleles choose 2) + number of 
 % alleles -- need to add number of alleles at the end to account for homozygotes
 
-genotypeFactor = struct('var', [], 'card', [], 'val', []);
+genotypeFactor = struct('var', [genotypeVarChild, genotypeVarParentOne, genotypeVarParentTwo], 'card', [], 'val', []);
 
 % Each allele has an ID.  Each genotype also has an ID.  We need allele and
 % genotype IDs so that we know what genotype and alleles correspond to each
@@ -55,11 +55,31 @@ genotypeFactor = struct('var', [], 'card', [], 'val', []);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %INSERT YOUR CODE HERE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  
-
-% Fill in genotypeFactor.var.  This should be a 1-D row vector.
-% Fill in genotypeFactor.card.  This should be a 1-D row vector.
+nb_genotypes = size(genotypesToAlleles)(1);
+genotypeFactor.card = [nb_genotypes,nb_genotypes,nb_genotypes];
 
 genotypeFactor.val = zeros(1, prod(genotypeFactor.card));
 % Replace the zeros in genotypeFactor.val with the correct values.
+for i=1:prod(genotypeFactor.card),
+  assignment = IndexToAssignment(i, genotypeFactor.card);
+  child_alleles_i =  genotypesToAlleles(assignment(1), 1);
+  child_alleles_j =  genotypesToAlleles(assignment(1), 2);
+  parent1_alleles_i =  genotypesToAlleles(assignment(2), 1);
+  parent1_alleles_j =  genotypesToAlleles(assignment(2), 2);
+  parent2_alleles_i =  genotypesToAlleles(assignment(3), 1);
+  parent2_alleles_j =  genotypesToAlleles(assignment(3), 2);
+  total_prob = 0.0;
 
+  parent1 = [parent1_alleles_i, parent1_alleles_j];
+  parent2 = [parent2_alleles_i, parent2_alleles_j];
+  for j=1:2,
+    for z=1:2,
+      if ((parent1(j) == child_alleles_i && parent2(z) == child_alleles_j) || (parent1(j) == child_alleles_j && parent2(z) == child_alleles_i))
+        total_prob += 0.25;
+      endif
+    endfor
+  endfor
+  
+  genotypeFactor.val(i) = total_prob;
+endfor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
